@@ -2,10 +2,11 @@ import os
 import cv2
 from tqdm import tqdm
 from PIL import Image
+import torch
 from torch.utils import data
 from torchvision import transforms
 
-from preproc import cv_random_flip, random_crop, random_rotate, color_enhance, random_pepper
+from preproc import preproc
 from config import Config
 
 
@@ -21,6 +22,8 @@ class MyData(data.Dataset):
         self.data_size = (config.size, config.size)
         self.is_train = is_train
         self.load_all = config.load_all
+        self.device = torch.device(config.device)
+        self.dataset = data_root.replace('\\', '/').split('/')[-1]
         if self.load_all:
             self.transform_image = transforms.Compose([
                 transforms.ToTensor(),
@@ -39,12 +42,14 @@ class MyData(data.Dataset):
                 transforms.Resize(self.data_size),
                 transforms.ToTensor(),
             ])
+        ## 'im' and 'gt' need modifying
         image_root = os.path.join(data_root, 'im')
         self.image_paths = [os.path.join(image_root, p) for p in os.listdir(image_root)]
         self.label_paths = [p.replace('/im/', '/gt/').replace('.jpg', '.png') for p in self.image_paths]
         if self.load_all:
             self.images_loaded, self.labels_loaded = [], []
-            for image_path, label_path in tqdm(zip(self.image_paths, self.label_paths), total=len(self.image_paths)):
+            for image_path, label_path in zip(self.image_paths, self.label_paths):
+            # for image_path, label_path in tqdm(zip(self.image_paths, self.label_paths), total=len(self.image_paths)):
                 self.images_loaded.append(
                     Image.fromarray(
                         cv2.cvtColor(cv2.resize(cv2.imread(image_path), (config.size, config.size), interpolation=cv2.INTER_LINEAR), cv2.COLOR_BGR2RGB)
@@ -68,16 +73,7 @@ class MyData(data.Dataset):
 
         # loading image and label
         if self.is_train:
-            if 'flip' in config.preproc_methods:
-                image, label = cv_random_flip(image, label)
-            if 'crop' in config.preproc_methods:
-                image, label = random_crop(image, label)
-            if 'rotate' in config.preproc_methods:
-                image, label = random_rotate(image, label)
-            if 'enhance' in config.preproc_methods:
-                image = color_enhance(image)
-            if 'pepper' in config.preproc_methods:
-                label = random_pepper(label)
+            image, label = preproc(image, label, preproc_methods=config.preproc_methods)
 
         image, label = self.transform_image(image), self.transform_label(label)
 

@@ -12,6 +12,7 @@ from utils import generate_smoothed_gt
 from dataset import MyData
 from models.baseline import BSL
 from utils import Logger, AverageMeter, set_seed
+from evaluation.valid import valid
 
 
 # Parameter from command line
@@ -32,9 +33,9 @@ parser.add_argument('--trainset',
 parser.add_argument('--ckpt_dir', default=None, help='Temporary folder')
 
 parser.add_argument('--testsets',
-                    default='DIS-VD+DIS-TE1+DIS-TE2+DIS-TE3+DIS-TE4',
+                    default='DIS-VD',
                     type=str,
-                    help="Options: 'DIS-VD', 'DIS-TE1', 'DIS-TE2', 'DIS-TE3', 'DIS-TE4'")
+                    help="Options: 'DIS-VD+DIS-TE1+DIS-TE2+DIS-TE3+DIS-TE4'")
 
 args = parser.parse_args()
 
@@ -52,7 +53,7 @@ test_loaders = {}
 for testset in args.testsets.split('+'):
     data_loader_test = torch.utils.data.DataLoader(
         dataset=MyData(data_root=os.path.join(config.data_root_dir, config.dataset, testset), image_size=config.size, is_train=False),
-        batch_size=config.batch_size, shuffle=True, num_workers=config.num_workers, pin_memory=True
+        batch_size=config.batch_size_valid, shuffle=False, num_workers=config.num_workers, pin_memory=True
     )
     print(len(data_loader_test), "valid dataloader {} has been created.".format(testset))
     test_loaders[testset] = data_loader_test
@@ -132,9 +133,19 @@ def main():
 
     for epoch in range(args.start_epoch, args.epochs+1):
         train_loss = train(epoch)
+        model.epoch = epoch
         # Save checkpoint
         if epoch >= args.epochs - config.val_last and (args.epochs - epoch) % config.save_step == 0:
             torch.save(model.state_dict(), os.path.join(args.ckpt_dir, 'ep{}.pth'.format(epoch)))
+            performance_dict = valid(
+                model,
+                data_loader_test,
+                pred_dir='.',
+                method=args.ckpt_dir.split('/')[-1],
+                only_S_MAE=True or (epoch < args.epochs - config.save_step * 5)
+            )
+            print('Smeasure: {:.4f}'.format(performance_dict['sm']))
+            print('MAE: {:.4f}'.format(performance_dict['mae']))
         lr_scheduler.step()
         if config.lambda_adv_g:
             lr_scheduler_d.step()
@@ -146,8 +157,8 @@ def train(epoch):
     model.train()
 
     for batch_idx, batch in enumerate(data_loader_train):
-        inputs = batch[0].to(device).squeeze(0)
-        gts = batch[1].to(device).squeeze(0)
+        inputs = batch[0].to(torch.device(config.device))
+        gts = batch[1].squeeze(0).to(torch.device(config.device))
 
         scaled_preds = model(inputs)
 

@@ -2,7 +2,7 @@
 .vscode
 ckpt
 preds
-evaluation/eval_result
+evaluation/eval-*
 *.out
 tmp*
 *.pth

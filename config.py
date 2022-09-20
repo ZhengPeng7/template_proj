@@ -17,15 +17,15 @@ class Config():
         self.data_root_dir = '/root/autodl-tmp/datasets/dis'
         self.dataset = 'DIS5K'
         self.size = 1024
-        self.batch_size = 20
+        self.batch_size = 15
         self.preproc_methods = ['flip', 'enhance', 'rotate', 'crop', 'pepper'][:3]
         self.num_workers = 8
-        self.load_all = False
+        self.load_all = True   #
+        # On one 3090 + 12 cores Intel(R) Xeon(R) Platinum 8255C CPU @ 2.50GHz, 2.75mins/epoch for training w/ pre-loading vs 7mins/epoch for training w/ online loading.
 
         # Training
-        self.optimizer = ['Adam', 'AdamW'][1]
-        self.epochs = 1e3
-        self.lr = 3e-4
+        self.optimizer = ['Adam', 'AdamW'][0]
+        self.lr = 1e-4
         self.freeze = True
         self.lr_decay_epochs = [-20]    # Set to negative N to decay the lr in the last N-th epoch.
 
@@ -44,15 +44,12 @@ class Config():
         self.lambda_adv_g = 10. * 0        # turn to 0 to avoid adv training
         self.lambda_adv_d = 3. * (self.lambda_adv_g > 0)
 
-        # Evaluation
-        self.eval_all_metrics = True
-
         # others
         self.device = ['cuda', 'cpu'][0]
         self.self_supervision = False
         self.label_smoothing = False
 
-        self.validation = False
+        self.batch_size_valid = 1
         self.rand_seed = 7
         run_sh_file = [f for f in os.listdir('.') if 'go.sh' == f] + [os.path.join('..', f) for f in os.listdir('..') if 'go.sh' == f]
         with open(run_sh_file[0], 'r') as f:
