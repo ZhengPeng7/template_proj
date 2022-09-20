@@ -137,15 +137,17 @@ def main():
         # Save checkpoint
         if epoch >= args.epochs - config.val_last and (args.epochs - epoch) % config.save_step == 0:
             torch.save(model.state_dict(), os.path.join(args.ckpt_dir, 'ep{}.pth'.format(epoch)))
-            performance_dict = valid(
-                model,
-                data_loader_test,
-                pred_dir='.',
-                method=args.ckpt_dir.split('/')[-1],
-                only_S_MAE=True or (epoch < args.epochs - config.save_step * 5)
-            )
-            print('Smeasure: {:.4f}'.format(performance_dict['sm']))
-            print('MAE: {:.4f}'.format(performance_dict['mae']))
+            for testset, data_loader_test in test_loaders.items():
+                performance_dict = valid(
+                    model,
+                    data_loader_test,
+                    pred_dir='.',
+                    method=args.ckpt_dir.split('/')[-1],
+                    only_S_MAE=True
+                )
+                print('Test set: {}:'.format(testset))
+                print('Smeasure: {:.4f}'.format(performance_dict['sm']))
+                print('MAE: {:.4f}'.format(performance_dict['mae']))
         lr_scheduler.step()
         if config.lambda_adv_g:
             lr_scheduler_d.step()

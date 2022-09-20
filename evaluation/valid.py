@@ -7,7 +7,7 @@ def valid(model, data_loader_test, pred_dir, method='tmp_val', testset='DIS-VD',
     if model_training:
         model.eval()
     inference(model, data_loader_test, pred_dir, method, testset)
-    performance_dict = evaluate(pred_dir, method, testset, only_S_MAE=only_S_MAE, epoch=model.epochs)
+    performance_dict = evaluate(pred_dir, method, testset, only_S_MAE=only_S_MAE, epoch=model.epoch)
     if model_training:
         model.train()
     return performance_dict
