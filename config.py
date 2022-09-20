@@ -18,7 +18,7 @@ class Config():
         self.dataset = 'DIS5K'
         self.size = 1024
         self.batch_size = 15
-        self.preproc_methods = ['flip', 'enhance', 'rotate', 'crop', 'pepper'][:3]
+        self.preproc_methods = ['flip', 'enhance', 'rotate', 'crop', 'pepper'][:1]
         self.num_workers = 8
         self.load_all = True   #
         # On one 3090 + 12 cores Intel(R) Xeon(R) Platinum 8255C CPU @ 2.50GHz, 2.75mins/epoch for training w/ pre-loading vs 7mins/epoch for training w/ online loading.
@@ -33,8 +33,8 @@ class Config():
         self.lambdas_pix_last = {
             # not 0 means opening this loss
             # original rate -- 1 : 30 : 1.5 : 0.2, bce x 30
-            'bce': 30 * 1,          # high performance
-            'iou': 0.5 * 1,         # 0 / 255
+            'bce': 1 * 1,          # high performance
+            'iou': 0.5 * 0,         # 0 / 255
             'mse': 150 * 0,         # can smooth the saliency map
             'triplet': 3 * 0,
             'reg': 100 * 0,

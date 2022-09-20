@@ -12,8 +12,8 @@ config = Config()
 def evaluate(pred_dir, method, testset, only_S_MAE=False, epoch=''):
     filename = os.path.join('evaluation', 'eval-{}.txt'.format(method))
     gt_paths = [
-        os.path.join(config.data_root_dir, config.dataset, 'DIS-VD', 'gt', p)
-        for p in os.listdir(os.path.join(config.data_root_dir, config.dataset, 'DIS-VD', 'gt'))
+        os.path.join(config.data_root_dir, config.dataset, testset, 'gt', p)
+        for p in os.listdir(os.path.join(config.data_root_dir, config.dataset, testset, 'gt'))
     ]
     pred_paths = [os.path.join(pred_dir, method, testset, p) for p in os.listdir(os.path.join(pred_dir, method, testset))]
     with open(filename, 'a+') as file_to_write:
