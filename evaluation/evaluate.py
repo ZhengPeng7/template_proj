@@ -9,7 +9,7 @@ from config import Config
 
 config = Config()
 
-def evaluate(pred_dir, method, testset, only_S_MAE=False, epoch=''):
+def evaluate(pred_dir, method, testset, only_S_MAE=False, epoch=0):
     filename = os.path.join('evaluation', 'eval-{}.txt'.format(method))
     gt_paths = [
         os.path.join(config.data_root_dir, config.dataset, testset, 'gt', p)
@@ -30,7 +30,7 @@ def evaluate(pred_dir, method, testset, only_S_MAE=False, epoch=''):
         )
         tb.add_row(
             [
-                method+epoch, testset, em['curve'].max().round(3), sm.round(3), fm['curve'].max().round(3), mae.round(3), em['curve'].mean().round(3), fm['curve'].mean().round(3),
+                method+str(epoch), testset, em['curve'].max().round(3), sm.round(3), fm['curve'].max().round(3), mae.round(3), em['curve'].mean().round(3), fm['curve'].mean().round(3),
                 em['adp'].round(3), wfm.round(3), fm['adp'].round(3)
             ] if not only_S_MAE else [method, testset, sm.round(3), mae.round(3)]
         )

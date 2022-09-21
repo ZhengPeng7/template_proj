@@ -48,8 +48,8 @@ class MyData(data.Dataset):
         self.label_paths = [p.replace('/im/', '/gt/').replace('.jpg', '.png') for p in self.image_paths]
         if self.load_all:
             self.images_loaded, self.labels_loaded = [], []
-            for image_path, label_path in zip(self.image_paths, self.label_paths):
-            # for image_path, label_path in tqdm(zip(self.image_paths, self.label_paths), total=len(self.image_paths)):
+            # for image_path, label_path in zip(self.image_paths, self.label_paths):
+            for image_path, label_path in tqdm(zip(self.image_paths, self.label_paths), total=len(self.image_paths)):
                 self.images_loaded.append(
                     Image.fromarray(
                         cv2.cvtColor(cv2.resize(cv2.imread(image_path), (config.size, config.size), interpolation=cv2.INTER_LINEAR), cv2.COLOR_BGR2RGB)

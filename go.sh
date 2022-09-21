@@ -1,19 +1,11 @@
 #!/bin/bash
 # Run script
 method="$1"
-epochs=100
+epochs=150
 val_last=50
 
 # Train
 CUDA_VISIBLE_DEVICES=$2 python train.py --ckpt_dir ckpt/${method} --epochs ${epochs} --testsets DIS-VD+DIS-TE1+DIS-TE2+DIS-TE3+DIS-TE4
-
-
-# # Test & Eval
-# # If dirs of performance and predictions already exist, remove them.
-# if [ "${method}" ] ;then
-#     rm -rf evaluation/${method}
-#     rm -rf /root/autodl-tmp/datasets/dis/preds/${method}
-# fi
 
 # step=5
 # for ((ep=${epochs};ep>${epochs}-${val_last};ep-=${step}))

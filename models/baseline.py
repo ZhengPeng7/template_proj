@@ -16,7 +16,7 @@ class BSL(nn.Module):
     def __init__(self):
         super(BSL, self).__init__()
         self.config = Config()
-        self.epoch = ''
+        self.epoch = 1
         bb = self.config.bb
         if bb == 'cnn-vgg16':
             bb_net = list(vgg16(pretrained=True).children())[0]

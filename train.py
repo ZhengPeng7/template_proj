@@ -131,7 +131,7 @@ def main():
         else:
             logger.info("=> no checkpoint found at '{}'".format(args.resume))
 
-    for epoch in range(args.start_epoch, args.epochs+1):
+    for epoch in range(model.epoch, args.epochs+1):
         train_loss = train(epoch)
         model.epoch = epoch
         # Save checkpoint
@@ -143,7 +143,8 @@ def main():
                     data_loader_test,
                     pred_dir='.',
                     method=args.ckpt_dir.split('/')[-1],
-                    only_S_MAE=True
+                    testset=testset,
+                    only_S_MAE=False
                 )
                 print('Test set: {}:'.format(testset))
                 print('Smeasure: {:.4f}'.format(performance_dict['sm']))
