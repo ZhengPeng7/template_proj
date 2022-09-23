@@ -1,6 +1,6 @@
 #!/bin/bash
 # Set dst repo here.
-repo="ABC"
+repo="loss_BCE_IoU-dilation2"
 mkdir ../${repo}
 mkdir ../${repo}/evaluation
 mkdir ../${repo}/models

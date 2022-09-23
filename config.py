@@ -11,6 +11,7 @@ class Config():
 
         # Components
         self.dec_blk = ['ResBlk'][0]
+        self.dilation = 2
         self.use_bn = self.bb not in ['cnn-vgg16']
 
         # Data
@@ -34,7 +35,7 @@ class Config():
             # not 0 means opening this loss
             # original rate -- 1 : 30 : 1.5 : 0.2, bce x 30
             'bce': 1 * 1,          # high performance
-            'iou': 0.5 * 0,         # 0 / 255
+            'iou': 0.05 * 1,         # 0 / 255
             'mse': 150 * 0,         # can smooth the saliency map
             'triplet': 3 * 0,
             'reg': 100 * 0,
